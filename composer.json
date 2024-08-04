@@ -14,5 +14,9 @@
     },
     "require": {
         "php": ">=7.0"
+    },
+    "minimum-stability": "dev",
+    "config": {
+        "process-timeout": 1800
     }
 }
