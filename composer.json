@@ -1,8 +1,12 @@
 {
     "name": "dogpay/chain",
-    "type": "library",
     "description": "DogPay PHP, An object-oriented library for calling DogPay payment channels",
+    "homepage": "https://github.com/jyzhengzifan/dogpay",
+    "type": "composer",
     "license": "MIT",
+    "support": {
+        "source": "https://github.com/jyzhengzifan/dogpay"
+    },
     "autoload": {
         "psr-4": {
             "Dogpay\\Chain\\": "src/"
