@@ -1,0 +1,12 @@
+{
+    "name": "dogpay/chain",
+    "type": "library",
+    "description": "DogPay PHP, An object-oriented library for calling DogPay payment channels",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Dogpay\\Chain\\": "src/"
+        }
+    },
+    "require": {}
+}
