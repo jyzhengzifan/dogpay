@@ -12,7 +12,7 @@ class Client
         $this->config = $config;
 
         $this->config['public_key'] = isset($this->config['public_key']) ? $this->handelPublicKey($this->config['public_key']) : '';
-        $this->config['public_key'] = isset($this->config['public_key']) ? $this->handelPrivateKey($this->config['public_key']) : '';
+        $this->config['private_key'] = isset($this->config['private_key']) ? $this->handelPrivateKey($this->config['private_key']) : '';
         $this->config['chain_public_key'] = isset($this->config['chain_public_key']) ? $this->handelPublicKey($this->config['chain_public_key']) : '';
         $this->config['chain_withdraw_public_key'] = isset($this->config['chain_withdraw_public_key']) ? $this->handelPublicKey($this->config['chain_withdraw_public_key']) : '';
 
