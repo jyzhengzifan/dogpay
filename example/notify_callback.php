@@ -37,9 +37,8 @@ if($postData['type'] == 1){
 
 
 $response = [
-    'data' => null,
     'code' => 0,
-    'message' => 'success',
-    'error' => null,
+    'msg' => 'ok',
+    'data' => null,
 ];
 exit(json_encode($response));
