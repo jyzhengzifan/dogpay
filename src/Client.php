@@ -5,13 +5,20 @@ namespace Dogpay\Chain;
 class Client
 {
 
-    private $key;
-    private $secret;
+    private $config;
     private $timestamp;
 
-    public function __construct($key, $secret){
-        $this->key = $key;
-        $this->secret = $secret;
+    public function __construct($config){
+        $this->config = $config;
+
+        $pem = chunk_split($this->config['public_key'], 64, "\n");
+        $this->config['public_key'] = "-----BEGIN PUBLIC KEY-----\n" . $pem . "-----END PUBLIC KEY-----\n";
+
+        $pem = chunk_split($this->config['private_key'], 64, "\n");
+        $this->config['private_key'] = "-----BEGIN PRIVATE KEY-----\n" . $pem. "-----END PRIVATE KEY-----\n";
+
+        $pem = chunk_split($this->config['chain_public_key'], 64, "\n");
+        $this->config['chain_public_key'] = "-----BEGIN PUBLIC KEY-----\n" . $pem . "-----END PUBLIC KEY-----\n";
         $this->timestamp = $this->getMillisecond();
     }
 
@@ -37,7 +44,75 @@ class Client
         }
         $dataStr = implode('&', $dataArray);
 
-        return md5($this->secret . $dataStr . $this->timestamp);
+        return md5($this->config['secret'] . $dataStr . $this->timestamp);
+    }
+
+    /**
+     * @param $data
+     * @return string
+     */
+    public function encryption($data)
+    {
+        if (is_array($data))
+            $signString = self::getSignString($data);
+        else
+            $signString = $data;
+        $privKeyId = openssl_pkey_get_private($this->config['private_key']);
+        $signature = '';
+        openssl_sign($signString, $signature, $privKeyId, OPENSSL_ALGO_MD5);
+        openssl_free_key($privKeyId);
+        return base64_encode($signature);
+    }
+
+
+    /**
+     * @param $data
+     * @param $sign
+     * @return bool
+     */
+    public function checkSignature($data, $sign)
+    {
+        $toSign = self::getSignString($data);
+        $publicKeyId = openssl_pkey_get_public($this->config['chain_public_key']);
+        $result = openssl_verify($toSign, base64_decode($sign), $publicKeyId, OPENSSL_ALGO_MD5);
+        openssl_free_key($publicKeyId);
+        return $result === 1 ? true : false;
+    }
+
+    /**
+     * @param $data
+     * @return string
+     */
+    public static function getSignString($data)
+    {
+        unset($data['sign']);
+        ksort($data);
+        reset($data);
+        $pairs = array();
+        foreach ($data as $k => $v) {
+            if (is_array($v)) $v = self::arrayToString($v);
+            $pairs[] = "$k=$v";
+        }
+
+        return implode('&', $pairs);
+    }
+
+    /**
+     * @param $data
+     * @return string
+     */
+    private static function arrayToString($data)
+    {
+        $str = '';
+        foreach ($data as $list) {
+            if (is_array($list)) {
+                $str .= self::arrayToString($list);
+            } else {
+                $str .= $list;
+            }
+        }
+
+        return $str;
     }
 
     /**
@@ -47,9 +122,11 @@ class Client
      */
     public function post($url, $data){
         $sign = $this->sign($data);
+        $clientSign = $this->encryption($data);
         $header = [
-            "key:{$this->key}",
+            "key:{$this->config['key']}",
             "sign:{$sign}",
+            "clientSign:{$clientSign}",
             "Content-Type:application/json",
             "timestamp:{$this->timestamp}",
         ];

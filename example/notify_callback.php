@@ -3,6 +3,13 @@ require __DIR__.'/../vendor/autoload.php';
 
 use Dogpay\Chain\DogPay;
 
+$postData = file_get_contents('php://input');
+$postData = '{"amount":"1.000000","chainid":"2","confirm":"51","createdtime":"1722794019000","from":"TGnyo4JQp69qaboYpAxhfuZ77XuS83swHY","hash":"70f07b4b6cac91aaa10a979f315878f1e5dac7cdb3ca5bc9d1a4ce88fd2c2e47","safecode":"202408080808081","sign":"IM77bxPM/yosHvO76+R9o3Rbv1Hj1j7oldZbOuZHwB7lvXMErJJ/jphboAffvCpPIOFJPWG8dKM7PXBVwtW9FLYjI2+jf9PInJPkJlouER+6rYLbeTVKltqTo21vkmrOO63ixMm2ZhVEd+OHTzK2+nGqdzfuTj9or7pgNrrJtwE8eq2eX7OHsvHH8SluOfISY4xQ3TU6bUCi8KcxE7ZyOtz5/0dPQu5PHCr8BhebAl4aHiHXkXWLdIC2A1KFyJzJcIoPPqdjIfh9hpWNxAZ3EriApBvYWdj2ysidHMPqBC+lI4MijwcsvdwCleTaiaAJON3jZipzGvODG6IX2Awg7g\u003d\u003d","status":"1","timestamp":"1723841201309","to":"TQ33qyLenhYxqMDPtVwdS92UhZwRWdD1VL","tokenaddress":"TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t","tokenid":"4","type":"2"}';
+if(!$postData){
+    exit;
+}
+$postData = json_decode($postData, true);
+
 $config = [
     'key' => 'l6qzcjnsxo4hmnod',
     'secret' => 'a79783c8114eb6a37fc1f04b215a427c47a4b80d5a1d6ac7b3d6db0f66c69e91',
@@ -12,9 +19,24 @@ $config = [
 ];
 $dogPay = new DogPay($config);
 
-$open_id = 'project100000';
-$chain_id = 2; //
+if(!$dogPay->verifyRsaSignature($postData)){
+    //Failed to verify signature
+    exit;
+}
 
-$result = $dogPay->createWallet($open_id, $chain_id);
+//The signature verification is successful, and the following business logic is processed
+if($postData['type'] == 1){
+    //Recharge transaction
 
-var_dump($result);
+}elseif($postData['type'] == 2){
+    //Withdrawal transaction
+
+}else{
+    //Type Error
+    exit;
+}
+
+
+
+//After the business logic is processed, code=0 needs to be returned to indicate that the callback message has been processed and no further notification is required. Otherwise, the callback will continue to notify (50 times every 2 seconds initially, and once every 10 minutes thereafter) until a message confirmation with code=0 is returned.
+exit('code=0');

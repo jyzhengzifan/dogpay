@@ -5,16 +5,12 @@ namespace Dogpay\Chain;
 class DogPay
 {
 
-    private $key;
-    private $secret;
     private $baseUrl;
     private $client;
 
-    public function __construct($key, $secret, $is_dev = false){
-        $this->key = $key;
-        $this->secret = $secret;
-        $this->baseUrl = $is_dev ? 'https://apipay-test.privatex.io/sdk/' : 'https://vapi.dogpay.ai/sdk/';
-        $this->client = new Client($this->key, $this->secret);
+    public function __construct($config){
+        $this->baseUrl = isset($config['is_dev']) && $config['is_dev'] ? 'https://apipay-test.privatex.io/sdk/' : 'https://vapi.dogpay.ai/sdk/';
+        $this->client = new Client($config);
     }
 
     /**
@@ -64,7 +60,13 @@ class DogPay
         return $this->client->post("{$this->baseUrl}partner/UserWithdrawByOpenID", $data);
     }
 
-
+    /**
+     * @param $data
+     * @return bool
+     */
+    public function verifyRsaSignature($data){
+        return $this->client->checkSignature($data, $data['sign']);
+    }
 
 
 }
