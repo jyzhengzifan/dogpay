@@ -68,5 +68,13 @@ class DogPay
         return $this->client->checkSignature($data, $data['sign']);
     }
 
+    /**
+     * @param $data
+     * @return bool
+     */
+    public function verifyWithdrawRsaSignature($data){
+        return $this->client->checkwithdrawSignature($data, $data['sign']);
+    }
+
 
 }

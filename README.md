@@ -17,11 +17,16 @@ require 'vendor/autoload.php';
 
 use Dogpay\Chain\DogPay;
 
-$key = 'Your Key';
-$secret = 'Your Secret';
-$dogPay = new DogPay($key, $secret);
+$config = [
+    'key' => 'Your Key',
+    'secret' => 'Your Secret',
+    'public_key' => 'Your RSA Public Key',
+    'private_key' => 'Your RSA Private Key',
+    'chain_public_key' => 'Chain RSA Public Key',
+];
+$dogPay = new DogPay($config);
 
-$open_id = 'project100003'; //It is recommended to use project name + user unique identifier
+$open_id = 'project100005';
 
 $result = $dogPay->createUser($open_id);
 ```
@@ -34,9 +39,14 @@ require 'vendor/autoload.php';
 
 use Dogpay\Chain\DogPay;
 
-$key = 'Your Key';
-$secret = 'Your Secret';
-$dogPay = new DogPay($key, $secret);
+$config = [
+    'key' => 'Your Key',
+    'secret' => 'Your Secret',
+    'public_key' => 'Your RSA Public Key',
+    'private_key' => 'Your RSA Private Key',
+    'chain_public_key' => 'Chain RSA Public Key',
+];
+$dogPay = new DogPay($config);
 
 $open_id = 'project100000'; //It is recommended to use project name + user unique identifier
 $chain_id = 2;  //The Chain ID can be checked through the table below
@@ -52,9 +62,14 @@ require 'vendor/autoload.php';
 
 use Dogpay\Chain\DogPay;
 
-$key = 'Your Key';
-$secret = 'Your Secret';
-$dogPay = new DogPay($key, $secret);
+$config = [
+    'key' => 'Your Key',
+    'secret' => 'Your Secret',
+    'public_key' => 'Your RSA Public Key',
+    'private_key' => 'Your RSA Private Key',
+    'chain_public_key' => 'Chain RSA Public Key',
+];
+$dogPay = new DogPay($config);
 
 $open_id = 'project100000';
 $token_id = 4;  //The Token ID can be checked through the table below

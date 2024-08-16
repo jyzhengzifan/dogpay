@@ -11,15 +11,22 @@ class Client
     public function __construct($config){
         $this->config = $config;
 
-        $pem = chunk_split($this->config['public_key'], 64, "\n");
-        $this->config['public_key'] = "-----BEGIN PUBLIC KEY-----\n" . $pem . "-----END PUBLIC KEY-----\n";
+        $this->config['public_key'] = isset($this->config['public_key']) ? $this->handelPublicKey($this->config['public_key']) : '';
+        $this->config['public_key'] = isset($this->config['public_key']) ? $this->handelPrivateKey($this->config['public_key']) : '';
+        $this->config['chain_public_key'] = isset($this->config['chain_public_key']) ? $this->handelPublicKey($this->config['chain_public_key']) : '';
+        $this->config['chain_withdraw_public_key'] = isset($this->config['chain_withdraw_public_key']) ? $this->handelPublicKey($this->config['chain_withdraw_public_key']) : '';
 
-        $pem = chunk_split($this->config['private_key'], 64, "\n");
-        $this->config['private_key'] = "-----BEGIN PRIVATE KEY-----\n" . $pem. "-----END PRIVATE KEY-----\n";
-
-        $pem = chunk_split($this->config['chain_public_key'], 64, "\n");
-        $this->config['chain_public_key'] = "-----BEGIN PUBLIC KEY-----\n" . $pem . "-----END PUBLIC KEY-----\n";
         $this->timestamp = $this->getMillisecond();
+    }
+
+    public function handelPublicKey($public_key){
+        $pem = chunk_split($public_key, 64, "\n");
+        return "-----BEGIN PUBLIC KEY-----\n" . $pem . "-----END PUBLIC KEY-----\n";
+    }
+
+    public function handelPrivateKey($private_key){
+        $pem = chunk_split($private_key, 64, "\n");
+        return "-----BEGIN PRIVATE KEY-----\n" . $pem. "-----END PRIVATE KEY-----\n";
     }
 
     /**
@@ -74,6 +81,21 @@ class Client
     {
         $toSign = self::getSignString($data);
         $publicKeyId = openssl_pkey_get_public($this->config['chain_public_key']);
+        $result = openssl_verify($toSign, base64_decode($sign), $publicKeyId, OPENSSL_ALGO_MD5);
+        openssl_free_key($publicKeyId);
+        return $result === 1 ? true : false;
+    }
+
+
+    /**
+     * @param $data
+     * @param $sign
+     * @return bool
+     */
+    public function checkWithdrawSignature($data, $sign)
+    {
+        $toSign = self::getSignString($data);
+        $publicKeyId = openssl_pkey_get_public($this->config['chain_withdraw_public_key']);
         $result = openssl_verify($toSign, base64_decode($sign), $publicKeyId, OPENSSL_ALGO_MD5);
         openssl_free_key($publicKeyId);
         return $result === 1 ? true : false;
