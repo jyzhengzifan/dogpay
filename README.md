@@ -31,7 +31,7 @@ $open_id = 'project100005';
 $result = $dogPay->createUser($open_id);
 ```
 
-## Create Waller
+## Create Wallet
 
 ```php
 
