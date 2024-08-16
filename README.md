@@ -82,6 +82,110 @@ $result = $dogPay->withdraw($open_id, $token_id, $amount, $address, $callback_ur
 ```
 
 
+
+
+
+
+## Notification callback
+
+```php
+
+require 'vendor/autoload.php';
+
+use Dogpay\Chain\DogPay;
+
+$postData = file_get_contents('php://input');
+if(!$postData){
+    exit;
+}
+$postData = json_decode($postData, true);
+
+$config = [
+    'key' => 'Your Key',
+    'secret' => 'Your Secret',
+    'public_key' => 'Your RSA Public Key',
+    'private_key' => 'Your RSA Private Key',
+    'chain_public_key' => 'Chain RSA Public Key',
+];
+$dogPay = new DogPay($config);
+
+if(!$dogPay->verifyRsaSignature($postData)){
+    //Failed to verify signature
+    exit;
+}
+
+//The signature verification is successful, and the following business logic is processed
+if($postData['type'] == 1){
+    //Recharge transaction
+
+}elseif($postData['type'] == 2){
+    //Withdrawal transaction
+
+}else{
+    //Type Error
+    exit;
+}
+
+
+$response = [
+    'code' => 0,
+    'msg' => 'ok',
+    'data' => null,
+];
+exit(json_encode($response));
+```
+
+
+
+
+
+
+## Second review of withdrawal order
+
+```php
+
+require 'vendor/autoload.php';
+
+use Dogpay\Chain\DogPay;
+use Dogpay\Chain\Client;
+
+$postData = file_get_contents('php://input');
+
+if(!$postData){
+    exit;
+}
+$postData = json_decode($postData, true);
+
+$config = [
+    'key' => 'Your Key',
+    'secret' => 'Your Secret',
+    'public_key' => 'Your RSA Public Key',
+    'private_key' => 'Your RSA Private Key',
+    'chain_public_key' => 'Chain RSA Public Key',
+    'chain_withdraw_public_key' => 'Chain withdrawal risk control RSA public key',
+];
+$dogPay = new DogPay($config);
+
+if(!$dogPay->verifyWithdrawRsaSignature($postData)){
+    //Failed to verify signature
+    exit;
+}
+
+
+//Verify the order information requested by the platform here. If the information is correct, the corresponding information will be as follows
+$response = [
+    'code' => 0,
+    'timestamp' => time(),
+    'message' => '',
+];
+$client = new Client($config);
+$sign = $client->encryption($response);
+$response['sign'] = $sign;
+
+exit(json_encode($response));
+```
+
+
 ## Chain ID
 
 | Coin Name          | Full name              | Blockchain browser address                | Chain ID    |

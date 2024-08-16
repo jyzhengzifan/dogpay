@@ -20,5 +20,3 @@ $callback_url = 'http://15.152.59.250:105/notify_callback.php';
 $sn = '202408080808081';
 
 $result = $dogPay->withdraw($open_id, $token_id, $amount, $address, $callback_url, $sn);
-
-var_dump($result);
