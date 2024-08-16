@@ -2,9 +2,9 @@
 require __DIR__.'/../vendor/autoload.php';
 
 use Dogpay\Chain\DogPay;
+use Dogpay\Chain\Client;
 
 $postData = file_get_contents('php://input');
-file_put_contents('./1.txt',$postData);
 
 if(!$postData){
     exit;
@@ -25,3 +25,16 @@ if(!$dogPay->verifyWithdrawRsaSignature($postData)){
     //Failed to verify signature
     exit;
 }
+
+
+//Verify the order information requested by the platform here. If the information is correct, the corresponding information will be as follows
+$response = [
+    'code' => 0,
+    'timestamp' => time(),
+    'message' => '',
+];
+$client = new Client($config);
+$sign = $client->encryption($response);
+$response['sign'] = $sign;
+
+exit(json_encode($response));

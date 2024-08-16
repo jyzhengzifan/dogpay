@@ -13,8 +13,6 @@ $config = [
 $dogPay = new DogPay($config);
 
 $open_id = 'project100000';
-$chain_id = 2; //
+$chain_id = 2;
 
 $result = $dogPay->createWallet($open_id, $chain_id);
-
-var_dump($result);
